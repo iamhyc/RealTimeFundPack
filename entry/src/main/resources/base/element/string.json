@@ -1,0 +1,16 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "module description"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "实时基金估值与投资组合跟踪"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "基估宝"
+    }
+  ]
+}
