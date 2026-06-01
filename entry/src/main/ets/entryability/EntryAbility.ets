@@ -29,6 +29,19 @@ export default class EntryAbility extends UIAbility {
       }
       hilog.info(DOMAIN, 'testTag', 'Succeeded in loading the content.');
     });
+
+    // 全屏布局：窗口延伸到状态栏和导航栏后面
+    windowStage.getMainWindow().then((mainWindow: window.Window) => {
+      mainWindow.setWindowLayoutFullScreen(true);
+      mainWindow.setWindowSystemBarProperties({
+        statusBarColor: '#00000000',
+        navigationBarColor: '#00000000'
+      }).catch((err: Error) => {
+        hilog.error(DOMAIN, 'testTag', 'Failed to set system bar properties. Cause: %{public}s', JSON.stringify(err));
+      });
+    }).catch((err: Error) => {
+      hilog.error(DOMAIN, 'testTag', 'Failed to get main window. Cause: %{public}s', JSON.stringify(err));
+    });
   }
 
   onWindowStageDestroy(): void {
