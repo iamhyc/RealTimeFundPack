@@ -41,6 +41,53 @@ export default function httpProxyTest() {
         const result = HttpProxy.isJsonpDataSource('https://www.example.com/');
         expect(result).assertFalse();
       });
+    });
+
+    describe('isInternalUrl', () => {
+      it('should return true for 伪域名首页', 0, () => {
+        const result = HttpProxy.isInternalUrl('https://real-time-fund.local/index.html');
+        expect(result).assertTrue();
+      });
+
+      it('should return true for 伪域名子路径', 0, () => {
+        const result = HttpProxy.isInternalUrl(
+          'https://real-time-fund.local/_next/static/chunks/main-abc123.js'
+        );
+        expect(result).assertTrue();
+      });
+
+      it('should return false for 天天基金 domain', 0, () => {
+        const result = HttpProxy.isInternalUrl(
+          'https://fundgz.1234567.com.cn/js/110022.js'
+        );
+        expect(result).assertFalse();
+      });
+
+      it('should return false for 东方财富 domain', 0, () => {
+        const result = HttpProxy.isInternalUrl(
+          'https://fund.eastmoney.com/000001.html'
+        );
+        expect(result).assertFalse();
+      });
+
+      it('should return false for 腾讯财经 domain', 0, () => {
+        const result = HttpProxy.isInternalUrl(
+          'https://qt.gtimg.cn/q=sh600519'
+        );
+        expect(result).assertFalse();
+      });
+
+      it('should return false for random external URL', 0, () => {
+        const result = HttpProxy.isInternalUrl('https://www.baidu.com/');
+        expect(result).assertFalse();
+      });
+
+      it('should return false for empty string', 0, () => {
+        const result = HttpProxy.isInternalUrl('');
+        expect(result).assertFalse();
+      });
+    });
+
     describe('mapToRawfilePath', () => {
       it('should map root path to index.html', 0, () => {
         const result = HttpProxy.mapToRawfilePath('https://real-time-fund.local/');
@@ -65,6 +112,8 @@ export default function httpProxyTest() {
         const result = HttpProxy.mapToRawfilePath('https://other.com/index.html');
         expect(result).assertNull();
       });
+    });
+
     describe('getMimeType', () => {
       it('should return text/html for .html', 0, () => {
         expect(HttpProxy.getMimeType('index.html')).assertEqual('text/html');

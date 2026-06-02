@@ -31,3 +31,11 @@ _Avoid_: 静态资源、dist
 **上游版本锁定（Upstream Pin）**:
 通过 Git Submodule 的 commit hash 精确锁定上游 Web 代码版本，发版节奏由 RealTimeFund 项目控制。
 _Avoid_: 依赖锁定
+
+**页面导航拦截（Load Intercept）**:
+`onLoadIntercept` 回调拦截 WebView 的页面级导航请求。伪域名（`real-time-fund.local`）内的页面跳转放行；外部域名链接被拦截并交由系统浏览器打开，防止用户离开 App 后无法返回。
+_Avoid_: URL 过滤、跳转拦截
+
+**外部链接逃逸（External Link Escape）**:
+WebView 内点击指向外部域名的超链接（`<a href>`），导致 WebView 离开伪域名上下文进入真实公网网站，用户无法通过 WebView 返回按钮回到 App 界面的现象。
+_Avoid_: 跳出、跑飞

@@ -1,6 +1,7 @@
 import { webview } from '@kit.ArkWeb';
 import { window } from '@kit.ArkUI';
 import { display } from '@kit.ArkUI';
+import { common, Want } from '@kit.AbilityKit';
 import { HttpProxy } from '../proxy/HttpProxy';
 
 /**
@@ -36,7 +37,7 @@ struct Index {
         .onInterceptRequest((event) => {
           if (!event) return null;
           const url: string = event.request.getRequestUrl();
-          if (url.includes('real-time-fund.local')) {
+          if (HttpProxy.isInternalUrl(url)) {
             const rawPath: string | null = HttpProxy.mapToRawfilePath(url);
             if (rawPath) {
               const response: WebResourceResponse = new WebResourceResponse();
@@ -46,6 +47,27 @@ struct Index {
             }
           }
           return null;
+        })
+        .onLoadIntercept((event) => {
+          if (!event) return false;
+          const url: string = event.data.getRequestUrl();
+          // 只允许内部伪域名在 WebView 内加载
+          if (HttpProxy.isInternalUrl(url)) {
+            return false;
+          }
+          // 外部链接：拦截并用系统浏览器打开
+          try {
+            const ctx = this.getUIContext().getHostContext() as common.UIAbilityContext;
+            const want: Want = {
+              action: 'ohos.want.action.viewData',
+              entities: ['entity.system.browsable'],
+              uri: url
+            };
+            ctx.startAbility(want);
+          } catch (err) {
+            // 静默失败
+          }
+          return true; // 拦截，不在 WebView 内加载
         })
     }
     .height('100%')

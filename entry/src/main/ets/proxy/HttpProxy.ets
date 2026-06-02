@@ -24,6 +24,17 @@ export class HttpProxy {
   }
 
   /**
+   * 判断给定 URL 是否属于内部伪域名（real-time-fund.local）。
+   * 内部 URL 在 WebView 内加载；外部 URL 由 onLoadIntercept 拦截后跳系统浏览器。
+   */
+  static isInternalUrl(url: string): boolean {
+    if (!url || url.length === 0) {
+      return false;
+    }
+    return url.includes(FAKE_DOMAIN);
+  }
+
+  /**
    * 将伪域名 URL 映射到 rawfile 相对路径。
    * 例如 'https://real-time-fund.local/_next/static/xxx.js' → 'web/_next/static/xxx.js'
    * 非本域 URL 返回 null。
