@@ -12,3 +12,7 @@
 /.appanalyzer
 # Generated web assets from upstream build
 /entry/src/main/resources/rawfile/web
+# Python cache
+__pycache__/
+*.pyc
+*.pyo

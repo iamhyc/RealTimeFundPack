@@ -72,17 +72,23 @@ def main() -> None:
     subprocess.run([npm, "config", "set", "https-proxy", "http://127.0.0.1:10808"],
                    cwd=str(UPSTREAM_DIR), env=get_env(), capture_output=True)
 
-    # Step 3: install dependencies
-    run_cmd([npm, "ci", "--legacy-peer-deps"], UPSTREAM_DIR, "npm ci")
+    # Step 3: install dependencies (npm install not ci — rule 4 🚫)
+    run_cmd([npm, "install", "--legacy-peer-deps"], UPSTREAM_DIR, "npm install")
 
-    # Step 4: build
-    run_cmd([npm, "run", "build"], UPSTREAM_DIR, "npm run build")
+    # Step 4: build (force webpack — SWC tarball sha512 broken on npm)
+    build_env = get_env()
+    build_env["NEXT_FORCE_WEBPACK"] = "1"
+    subprocess.run([npm, "run", "build"], cwd=str(UPSTREAM_DIR), env=build_env)
 
     if not out_dir.exists():
         print("[ERROR] upstream build did not produce out/ directory", file=sys.stderr)
         sys.exit(1)
 
-    # Step 4: copy to rawfile
+    # Step 5: CSS post-processing for HarmonyOS WebView performance
+    from optimize_css import process_directory
+    process_directory(str(out_dir))
+
+    # Step 6: copy to rawfile
     if RAWFILE_WEB_DIR.exists():
         shutil.rmtree(str(RAWFILE_WEB_DIR))
     shutil.copytree(str(out_dir), str(RAWFILE_WEB_DIR))
